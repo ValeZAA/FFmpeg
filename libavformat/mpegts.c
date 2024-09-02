@@ -2947,6 +2947,9 @@ static int read_packet(AVFormatContext *s, uint8_t *buf, int raw_packet_size,
 {
     AVIOContext *pb = s->pb;
     int len;
+    
+    if (raw_packet_size == TS_DVHS_PACKET_SIZE)
+        avio_skip(pb, 4);
 
     for (;;) {
         len = ffio_read_indirect(pb, buf, TS_PACKET_SIZE, data);
@@ -2970,7 +2973,11 @@ static int read_packet(AVFormatContext *s, uint8_t *buf, int raw_packet_size,
 static void finished_reading_packet(AVFormatContext *s, int raw_packet_size)
 {
     AVIOContext *pb = s->pb;
-    int skip = raw_packet_size - TS_PACKET_SIZE;
+    int skip;
+    if (raw_packet_size == TS_DVHS_PACKET_SIZE)
+        skip = raw_packet_size - TS_DVHS_PACKET_SIZE;
+    else
+        ip = raw_packet_size - TS_PACKET_SIZE;
     if (skip > 0)
         avio_skip(pb, skip);
 }
